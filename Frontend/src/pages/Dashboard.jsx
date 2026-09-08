@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import {
   PieChart,
@@ -18,6 +19,8 @@ const [loading, setLoading] = useState(true);
 const [error, setError] = useState("");
 const [search, setSearch] = useState("");
 const [statusFilter, setStatusFilter] = useState("all");
+
+const navigate = useNavigate();
 
 useEffect(() => {
   fetchLeads();
@@ -153,16 +156,48 @@ const addNote = async (leadId) => {
   }
 };
 
+const deleteLead = async (leadId) => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this lead?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const token = localStorage.getItem("clienttrack_token");
+
+    await axios.delete(
+      `http://localhost:5000/api/leads/${leadId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    setLeads((prevLeads) =>
+      prevLeads.filter((lead) => lead._id !== leadId)
+    );
+  } catch (error) {
+    setError(
+      error.response?.data?.message ||
+        "Failed to delete lead. Please try again."
+    );
+  }
+};
+
 
   const admin = JSON.parse(
     localStorage.getItem("clienttrack_admin")
   );
 
   const handleLogout = () => {
-    localStorage.removeItem("clienttrack_token");
-localStorage.removeItem("clienttrack_admin");
-onLogout();
-  };
+  localStorage.removeItem("clienttrack_token");
+  localStorage.removeItem("clienttrack_admin");
+
+
+  window.location.href = "/";
+};
 
   return (
   <div className="min-h-screen bg-slate-100">
@@ -211,47 +246,63 @@ onLogout();
       </div>
 
       {/* Analytics */}
-      <div className="mb-8 mt-8 rounded-2xl bg-white p-6 shadow-sm">
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-slate-900">
-            Lead Analytics
-          </h2>
+      {/* Analytics */}
+<div className="mb-8 mt-8 rounded-2xl bg-white p-6 shadow-sm">
+  <div className="mb-4">
+    <h2 className="text-xl font-bold text-slate-900">
+      Lead Analytics
+    </h2>
 
-          <p className="text-sm text-slate-500">
-            Distribution of leads by current status
-          </p>
-        </div>
+    <p className="text-sm text-slate-500">
+      Distribution of leads by current status
+    </p>
+  </div>
 
-        <div className="h-80">
-  <ResponsiveContainer width="100%" height="100%">
-    <PieChart>
-      <Pie
-        data={chartData}
-        dataKey="value"
-        nameKey="name"
-        cx="50%"
-        cy="50%"
-        outerRadius={100}
-        label
-      >
-        {chartData.map((entry, index) => {
-          const colors = ["#2563eb", "#f97316", "#16a34a"];
+  {leads.length === 0 ? (
+    <div className="flex h-80 flex-col items-center justify-center text-center">
+      <div className="text-4xl">📊</div>
 
-          return (
-            <Cell
-              key={`cell-${index}`}
-              fill={colors[index]}
-            />
-          );
-        })}
-      </Pie>
+      <h3 className="mt-4 text-lg font-semibold text-slate-800">
+        No lead data available
+      </h3>
 
-      <Tooltip />
-      <Legend />
-    </PieChart>
-  </ResponsiveContainer>
+      <p className="mt-2 max-w-md text-sm text-slate-500">
+        Submit a lead through the contact form to see your lead analytics
+        here.
+      </p>
+    </div>
+  ) : (
+    <div className="h-80">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={100}
+            label
+          >
+            {chartData.map((entry, index) => {
+              const colors = ["#2563eb", "#f97316", "#16a34a"];
+
+              return (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={colors[index]}
+                />
+              );
+            })}
+          </Pie>
+
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  )}
 </div>
-      </div>
 
       {/* Search and Filter */}
       <div className="mb-6 mt-6 flex flex-col gap-4 md:flex-row">
@@ -300,10 +351,18 @@ onLogout();
         )}
 
         {!loading && !error && leads.length === 0 && (
-          <p className="text-slate-500">
-            No leads found.
-          </p>
-        )}
+  <div className="py-10 text-center">
+    <div className="text-4xl">📋</div>
+
+    <h3 className="mt-4 text-lg font-semibold text-slate-800">
+      No leads yet
+    </h3>
+
+    <p className="mt-2 text-sm text-slate-500">
+      Leads submitted through your website will appear here.
+    </p>
+  </div>
+)}
 
         {!loading && leads.length > 0 && (
           <div className="overflow-x-auto">
@@ -316,6 +375,7 @@ onLogout();
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Date</th>
                   <th className="px-4 py-3">Notes</th>
+<th className="px-4 py-3">Action</th>
                 </tr>
               </thead>
 
@@ -393,6 +453,15 @@ onLogout();
                         </div>
                       )}
                     </td>
+
+                    <td className="px-4 py-4">
+  <button
+    onClick={() => deleteLead(lead._id)}
+    className="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+  >
+    Delete
+  </button>
+</td>
                   </tr>
                 ))}
               </tbody>

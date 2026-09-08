@@ -22,13 +22,7 @@ function Navbar({ admin, onLogout }) {
             </p>
           </div>
 
-          <Link
-            to="/contact"
-            target="_blank"
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-          >
-            Contact Form
-          </Link>
+          
 
           <button
             onClick={onLogout}
