@@ -223,27 +223,34 @@ onLogout();
         </div>
 
         <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={chartData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                label
-              >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} />
-                ))}
-              </Pie>
+  <ResponsiveContainer width="100%" height="100%">
+    <PieChart>
+      <Pie
+        data={chartData}
+        dataKey="value"
+        nameKey="name"
+        cx="50%"
+        cy="50%"
+        outerRadius={100}
+        label
+      >
+        {chartData.map((entry, index) => {
+          const colors = ["#2563eb", "#f97316", "#16a34a"];
 
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+          return (
+            <Cell
+              key={`cell-${index}`}
+              fill={colors[index]}
+            />
+          );
+        })}
+      </Pie>
+
+      <Tooltip />
+      <Legend />
+    </PieChart>
+  </ResponsiveContainer>
+</div>
       </div>
 
       {/* Search and Filter */}
