@@ -44,9 +44,10 @@ ClientTrack/
 
 ### 1. Clone the Repository
 
-````bash
+```bash
 git clone https://github.com/lovesh-semwal/FUTURE_FS_02.git
 cd FUTURE_FS_02
+```
 
 ### 2. Start Backend
 
@@ -54,6 +55,7 @@ cd FUTURE_FS_02
 cd Backend
 npm install
 npm run dev
+```
 
 ### 3. Start Frontend
 
@@ -63,6 +65,7 @@ Open another terminal:
 cd Frontend
 npm install
 npm run dev
+```
 
 ### 4. Environment Variables
 
@@ -72,8 +75,8 @@ Create a .env file inside the Backend folder:
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
+```
 
 ## Author
 
 Lovesh Semwal
-````
